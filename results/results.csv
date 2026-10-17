@@ -58,3 +58,5 @@ time,version,opponent,seed0,games,win_rate,ci95,mean_cpu_ms,worst_cpu_ms,games_o
 2026-10-17 16:32 IST,v69_CHATGPT,vj07_ensemble,100000,400,0.4550,0.0488,250.2,810.0,0,0,head-to-head vs vj07; loses
 2026-10-17 16:36 IST,v02_turn_rollout_counter_F (Vivaan),F,100000,200,0.3250,0.0649,323.2,1010.0,0,0,team machine; official harness A = this agent; commit e269338; no timing code so machine-independent; Vivaan's 0.648 likely had A/B swapped
 2026-10-17 16:36 IST,v02_turn_rollout_counter_F (Vivaan),vj07_ensemble,100000,400,0.2775,0.0439,294.0,1080.0,0,0,head-to-head vs vj07; loses clearly
+2026-10-17 16:46 IST,vj09_ensemble,F,100000,300,0.6133,0.0551,357.0,1120.0,0,0,quick check (3 x 100 on seed0 100000/100100/100200); 64+60+60 wins; vj07 + exact expectation for MOVE_ROBBER and ROLL (Sanyam's v06 change 2); not uploaded
+2026-10-17 16:55 IST,vj10_weighted,F,100000,300,0.6400,0.0543,313.3,840.0,0,0,quick check (3 x 100 on seed0 100000/100100/100200; same games as vj09); 66+64+62 wins; 4 voters weighted A1.5/B1.0/C1.25/D0.75 (#3/v04/v04c/v04b); vj09 0.6133 on same games -> no measurable difference; UPLOADED #7
