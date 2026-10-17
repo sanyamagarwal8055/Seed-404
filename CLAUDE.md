@@ -127,30 +127,59 @@ probabilities (a 6 tile ≈ 0.139 per roll), so production terms are about 1e7 t
 | Version | What | Status |
 |---|---|---|
 | v00_f_copy | exact copy of F | baseline |
-| v01_catan_fixes | F + port bonus (2:1 → 3e7×prod_r, 3:1 → 1e7×total prod), road progress 3e6×min(len,8), army progress 3e6×min(knights,4), reachable_production_0 = 1e4 | pushed (8569d2b), waiting for Jainam's test |
+| v01_catan_fixes | F + port bonus (2:1 → 3e7×prod_r, 3:1 → 1e7×total prod), road progress 3e6×min(len,8), army progress 3e6×min(knights,4), reachable_production_0 = 1e4 | **current best**; uploaded |
+| v02_openings | v01 + pair-aware snake-order setup settlements and roads | neutral: no measurable gain over v01 |
+
+Measured results (from `results/results.csv`; judge = 1000 games seed0 990000, ci95 ≈ ±3.1;
+pool and head-to-head = 400 games seed0 100000, ci95 ≈ ±4 to 5):
+
+| Version | F judge | F quick | road_army_f | card_hoarder | greedy_builder (new) | vs previous best | mean / worst CPU (judge) |
+|---|---|---|---|---|---|---|---|
+| v00_f_copy | 48.9% | 51.8% | 44.0% | 65.0% | 76.0% | n/a | 182 / 480 ms |
+| v01_catan_fixes | **55.3%** | 56.0% | 48.8% | 71.3% | 79.5% | n/a (= F judge) | 183 / 470 ms |
+| v02_openings | 55.4% | 55.8% | 50.8% | 68.5% | 80.8% | 47.5% vs v01 | 175 / 470 ms |
+
+- v01 beats v00 by +6.4 points on the judge (> ci95): measurably better. **Build on v01.**
+- v02 is neutral: build on v01, keep v02's opening code only if a later test shows it helps.
+- Weakest matchup for every version: **road_army_f** (a road racer, longest road avg 8.4 vs F's 5.3).
+- CPU: about 175 to 200 ms per game of a ~1000 ms allowance. We use under 20% of our compute.
 
 Prototype numbers (Claude's own workspace, 200 games vs F, seed0 100000, NOT in results.csv,
 do not quote in the report): ports 52.5%, road 55.0%, army 53.5%, r0 54.5% (all ±6.9%);
 same-turn lookahead on F's score 52% ± 7% (seed0 990000).
 
+### Goal from now on: robustness, not just beating F
+Robustness is scored as our mean win rate vs the **worse half** of our group, so we optimise our
+worst matchups. Generalisation rules for every version:
+- Judge each version on the whole pool (F, road_army_f, card_hoarder, greedy_builder, previous best),
+  not only F. A version is better only if it improves the pool's worst half without measurably
+  losing to F.
+- Prefer reasoning (search over the actual position) over hand-tuned special cases: search adapts to
+  unseen opponents, special cases overfit.
+- Any tuning uses a mixed-opponent fitness (mean win rate over the pool, or mean of the worst half),
+  seeds 200000+ only, multiplicative (log-scale) small steps. Never tune on 100000 or 990000.
+- Keep it simple and explainable: one idea per version, every result goes in the report.
+
 ### Roadmap (adjust to Jainam's results; ask Sanyam before changing order)
-1. **v02_openings**: use the 300 ms base for setup. Score settlement *pairs* with the snake order
-   (we pick, opponent picks twice, we pick last): production (pips/36), resource diversity
-   (no player trading!), ports, complement between our two settlements, expected opponent picks.
-2. **v03_expected**: average the value of random-outcome moves (BUY_DEVELOPMENT_CARD, MOVE_ROBBER
-   steals, ROLL vs PLAY_KNIGHT before rolling) over several samples instead of one.
-3. **v04_lookahead**: same-turn lookahead within budget (trade → build, road building →
-   settlement): expand top-k actions, follow our own deterministic follow-ups until END_TURN,
-   score the final state; random-outcome actions end the line.
-4. **v05_tuned**: write `tools/tune.py` (Jainam runs it): evolution strategy / CMA-ES over the
-   weights in **log scale** (multiply, never add), keep public_vps fixed, mutate 1 to 3 weights at a
-   time, score by win rate vs F on `--seed0 200000+` only, at least 200 games per candidate,
-   parallel processes with one thread each, log every candidate to a CSV.
-5. **v06_learned**: learned value function: generate games, record
-   `catanatron.features.create_sample_vector(game, color)` (614 numbers) + winner, fit logistic
-   regression (scikit-learn), ship coefficients as a .npy file, blend with F's score.
-6. **v07_final**: combine only what measurably helped, plus endgame rules (win immediately if any
-   action reaches 10 VP; treat opponent's unplayed dev cards as possible hidden VP).
+1. **v03_search**: on top of v01. Use the spare CPU for budget-aware search: for the top-k actions
+   by v01's value, follow our own deterministic same-turn follow-ups (trade → build, road building →
+   settlement) until END_TURN, then score the final position. Random-outcome actions (roll, buy dev
+   card, robber steal) are scored as the average over a few samples. Budget per decision from
+   `obs.cpu_left` (never more than ~30% of what's left, extra only in the opening), deadline with
+   `time.process_time()`, always return the best found so far. Target mean CPU ~500-600 ms per game.
+2. **v04_road_defense**: counter road racers. Value the Longest Road race RELATIVELY (our length
+   minus opponent's, once the opponent has >= 4), reward settlements/roads that cut the opponent's
+   road extension, push the robber onto the opponent's wood/brick hexes while they are racing, and
+   value Largest Army as the alternative 2 VP when we can't win the road race.
+3. **v05_tuned_pool**: write `tools/tune.py` for Jainam: evolution strategy over v01's weights and
+   extra weights, fitness = mean win rate over the opponent pool (log-scale steps, public_vps fixed,
+   200+ games per candidate, seeds 200000+, one thread per process, log every candidate to CSV).
+4. **v06_adaptive**: the same Agent object plays many games in a row against one opponent (allowed
+   by the rules). Detect the opponent's style from what we see (road length growth, dev cards
+   bought, knights played) and shift weights (e.g. more road defense vs a road racer). Must stay
+   safe if detection is wrong.
+5. **v07_final**: combine only what measurably helped, plus endgame rules (win immediately if any
+   action reaches 10 VP; treat the opponent's unplayed dev cards as possible hidden VP).
 
 Catan facts to use: pips = ways to roll (6/8 = 5, 5/9 = 4, 4/10 = 3, 3/11 = 2, 2/12 = 1);
 cities double production and cannot be blocked; Longest Road / Largest Army are 4-point swings in
