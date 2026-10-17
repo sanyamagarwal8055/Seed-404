@@ -92,9 +92,11 @@ def main():
     f_path = os.path.join(kit, "examples", "f_agent.py")
     r_path = os.path.abspath(os.path.join(HERE, "..", "opponents", "road_army_f.py"))
     # split the 8 workers in proportion to the games: 200 F games in 5 tasks, 120 in 3 (40 games each)
-    total = args.pairs_f + args.pairs_r
-    cf_ = max(1, round(args.workers * args.pairs_f / total))
-    plan = [(f_path, args.pairs_f, cf_), (r_path, args.pairs_r, max(1, args.workers - cf_))]
+    if args.pairs_r > 0:
+        cf_ = max(1, round(args.workers * args.pairs_f / (args.pairs_f + args.pairs_r)))
+        plan = [(f_path, args.pairs_f, cf_), (r_path, args.pairs_r, max(1, args.workers - cf_))]
+    else:                                     # F only: every worker plays F
+        plan = [(f_path, args.pairs_f, args.workers)]
     until = datetime.datetime.combine(datetime.date.today(),
                                       datetime.datetime.strptime(args.until, "%H:%M").time())
     rng = random.Random(args.seed)
@@ -143,8 +145,9 @@ def main():
             for name, vec in cands:
                 t0 = time.time()
                 path = make_candidate(mult_of(vec), work, f"{name}")
-                wf, wr = evaluate(pool, path, plan, seed0)
-                fit = (wf + wr) / 2
+                rates = evaluate(pool, path, plan, seed0)
+                wf, wr = rates[0], (rates[1] if len(rates) > 1 else float("nan"))
+                fit = sum(rates) / len(rates)
                 results.append((fit, name, vec))
                 log.writerow([datetime.datetime.now().strftime("%H:%M:%S"), gen, name, f"{wf:.3f}",
                               f"{wr:.3f}", f"{fit:.4f}", json.dumps({k: (None if v is None else round(v, 3)) for k, v in vec.items()})])
