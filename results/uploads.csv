@@ -1,0 +1,2 @@
+time,version,zip,upload_key,agent_sha1,portal_status,submission_no,win_vs_F,ci95_F,win_vs_O,ci95_O,mean_cpu_ms,games_over_clock,faults,notes
+2026-10-17 13:47 IST,v01_catan_fixes,v01_catan_fixes.zip,seed404-1151-2-v01_catan_fixes.zip,f1266086d3de32ac2d94f410df7fede4cea9bae0,pending,,,,,,,,,first upload; zip holds agent.py only; local judge vs F 0.553 +-0.031
