@@ -1,25 +1,32 @@
 # Seed 404: evaluation results
 
 Runner's summary of every evaluation so far. The raw numbers, one row per run, are in
-[`results.csv`](results.csv); this file explains them. Last updated 17 Oct 2026, 15:20 IST, after
-`v04_tuned` and `v05_expect_relative`.
+[`results.csv`](results.csv); this file explains them. Last updated 17 Oct 2026, 16:20 IST, after
+`vj07_ensemble`.
 
-**Bottom line:** **`v04_tuned` is the current best**: 0.621 ± 0.030 against F on the judge (v01
-0.553), it beats v01 head to head (0.560) and is above 50% against road_army_f for the first time.
-Its gain comes from tuning every weight on win rate. Everything that changed search or added
-hand-made features instead (v02, v03, v05, x1, x2) stayed at or below v01; v05 is measurably worse.
-Our learned value function (vj01, vj02) predicts winners well but plays badly (section 9).
+**Bottom line (16:20):** best on the portal is **upload #3, Vivaan's `v01_tuned_roadrace`**: 0.611
+against F, 0.424 against O (strength 0.518). The best local judge is now the **`vj07_ensemble`**
+(three tuned value functions voting on each move): **0.650 ± 0.030** against F, even with #3 head to
+head. Everything that gained came from tuning weights on win rate or combining tuned weights; search,
+hand-made features and a learned win predictor did not (section 8).
 
 | Version | Judge vs F | Verdict |
 |---|---|---|
 | v00_f_copy | 0.489 | baseline |
-| v01_catan_fixes | 0.553 | better than v00 |
+| v01_catan_fixes | 0.553 | better than v00 (upload #1) |
 | v02_openings | 0.554 | = v01 |
 | v03_search | 0.556 | = v01, 55% more CPU |
-| **v04_tuned** | **0.621** | **better than v01: current best** |
+| v04_tuned | 0.621 | better than v01 (upload #2) |
 | v05_expect_relative | 0.439 | **worse than v01** |
 | x1_v03_budget (vj) | 0.567 | = v01 |
 | x2_v01_road (vj) | 0.562 | = v01 |
+| v01_tuned_roadrace (Vivaan) | 0.623 | = v04 on F, better on the portal (upload #3) |
+| vj06_vpcards (K = 0.5) | 0.623 | = #3 on F (0.500 head to head); aimed at O |
+| x3_v04c | 0.636 | ≥ #3, inside the margin |
+| **vj07_ensemble** | **0.650** | **highest judge; even with #3 head to head (0.508)** |
+
+**Not yet uploaded (16:20):** vj07, x3_v04c and vj06 are tested and clean (0 errors, 0 games over the
+clock). Only the best submission counts, so all three can go up as extra chances.
 
 **Official score (portal, submission #1, v01):** 0.541 ± 0.031 against F and **0.393 ± 0.030 against
 O**, strength 0.467. Our local numbers against F are confirmed; O is much stronger than F and is now
@@ -208,10 +215,30 @@ and recovered to about v01's level when blended, but then weighted public VPs �
 model of which move is better.** Fixing it needs a decision-level target (imitation, or tuning on
 win rate), which is what v04 does.
 
-**vj04: evolution strategy over v01's weights against F (laptop, in progress).** Same idea as v04
-but fitness against F only. Estimate after 4 generations: 0.603 ± 0.055 (perfect-information games).
-It moves weights the same way v04's tuner did (production up about 10×, opponent production down
-about 10×).
+**vj04: evolution strategy over v01's weights against F (laptop, stopped at 15:25).** Same idea as
+v04 but fitness against F only. Estimate after 4 generations: 0.603 ± 0.055 (perfect-information
+games). It moved weights the same way v04's tuner did (production up about 10×, opponent production
+down about 10×). Stopped in favour of continuing v04's own tuner.
+
+**Teacher check 2: is search on v04's tuned value a teacher?** AlphaBeta depth 2 on v04's value,
+perfect information, no clock: 0.429 ± 0.106 against v04 itself. No: distillation is not viable.
+
+**vj06_vpcards: F's value is blind to Victory Point cards.** F scores points with the public count
+(`P0_VICTORY_POINTS`); a VP development card only raises `ACTUAL_VICTORY_POINTS`, so to F (and every
+version built on it) a VP card is worth nothing, and buying a development card (about 0.2 points on
+average) is valued at `hand_devs` = 10 instead of about 6e13. vj06 = #3 plus (1) our hidden VP cards
+counted at K × one public point and (2) buying a development card scored as its exact expectation over
+the unseen cards (`execute_spectrum`). Against F: judge 0.623 (= #3), head to head 0.500. F hardly
+buys development cards, so this cannot show against F; it is aimed at O, and only the portal can tell.
+
+**x3_v04c: v04 tuned further against stronger opponents.** Sanyam's tuner, 34 more generations from
+v04's weights, opponents F, road_army_f and v04 itself: judge 0.636 ± 0.030 (v04 0.621).
+
+**vj07_ensemble: three tuned value functions vote.** #3 (Vivaan), v04 (Sanyam) and x3's weights, each
+with vj06's VP-card fix; every move is played once, each member votes for its best move, a majority
+wins, otherwise #3's choice. Judge **0.650 ± 0.030**, the highest so far; head to head with #3 0.508;
+273 ms per game. Each tuning run is partly luck fitted to its own boards and opponents; the vote keeps
+the choices that independent runs agree on.
 
 ## 9. Suggested next steps
 
