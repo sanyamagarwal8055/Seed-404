@@ -1,0 +1,21 @@
+{
+ "public_vps": 300000000000000.0,
+ "production": 153451789.33021602,
+ "enemy_production": -606245163.0982914,
+ "num_tiles": 9.42029721523358,
+ "reachable_production_0": 1855.5146540723504,
+ "reachable_production_1": 3285.16897935638,
+ "buildable_nodes": 1403.4285952686525,
+ "longest_road": 10.0,
+ "hand_synergy": 36.07369630355953,
+ "hand_resources": 0.4234136161216461,
+ "discard_penalty": -14.776566467565015,
+ "hand_devs": 10.0,
+ "army_size": 19.438150799976082,
+ "port2": 13724363.32831911,
+ "port3": 14270047.243813604,
+ "road": 1414763.6445031825,
+ "army": 4394900.295439266,
+ "road_race": 923477.3751338206,
+ "opp_vps": 21614742336230.086
+}
