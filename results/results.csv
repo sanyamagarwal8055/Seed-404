@@ -36,3 +36,6 @@ time,version,opponent,seed0,games,win_rate,ci95,mean_cpu_ms,worst_cpu_ms,games_o
 2026-10-17 15:14 IST,v04_tuned,v01_catan_fixes,100000,400,0.5600,0.0486,183.2,500.0,0,0,head-to-head vs previous best; 3 in parallel; lower bound 0.511 > 0.5 -> better
 2026-10-17 15:29 IST,v01_tuned_roadrace,F,990000,1000,0.6230,0.0300,,,0,0,judge on Vivaan's laptop; 3 parts (334+334+332 on seed0 990000/990167/990334); 213+206+204 wins; v01 rerun alongside on same games gave 190+173+190 = 0.553 (identical to team machine); CPU not comparable (6 runs in parallel)
 2026-10-17 15:22 IST,v01_tuned_roadrace,road_army_f,700000,180,0.5670,0.0724,,,0,0,fresh-board check via tuning/validate.py on Vivaan's laptop; v01 got 0.472 on the same games
+2026-10-17 15:40 IST,catanatron_AlphaBeta_d2_v04value,v04_tuned,410000,84,0.4290,0.1060,,,0,0,LAPTOP; perfect info; NO clock; teacher check for distillation -> not stronger than v04
+2026-10-17 15:40 IST,catanatron_AlphaBeta_d2_v04value,F,410000,84,0.5830,0.1050,,,0,0,LAPTOP; same setup
+2026-10-17 15:40 IST,v04_tuned_greedy_perfect_info,F,410000,84,0.5240,0.1070,,,0,0,LAPTOP; reference for the teacher check (catanatron directly; not the harness)
