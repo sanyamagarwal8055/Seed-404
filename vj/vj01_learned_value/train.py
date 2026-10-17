@@ -31,6 +31,8 @@ def main():
     p.add_argument("data", nargs="+")
     p.add_argument("--C", type=float, nargs="+", default=[0.001, 0.01, 0.1, 1.0])
     p.add_argument("--out", default=os.path.join(HERE, "weights.npz"))
+    p.add_argument("--drop", nargs="*", default=[],
+                   help="drop every feature whose name contains one of these substrings")
     a = p.parse_args()
 
     Xs, ys, gs, names = [], [], [], None
@@ -45,6 +47,10 @@ def main():
     X = np.concatenate(Xs).astype(np.float64)
     y = np.concatenate(ys)
     g = np.concatenate(gs)
+    keep = np.array([not any(s in n for s in a.drop) for n in names])
+    if a.drop:
+        print("dropped:", [str(n) for n in names[~keep]])
+    X, names = X[:, keep], names[keep]
     val = (g % 5) == 0
     print(f"{len(y)} positions from {len(np.unique(g))} games; "
           f"train {(~val).sum()}, validation {val.sum()}")

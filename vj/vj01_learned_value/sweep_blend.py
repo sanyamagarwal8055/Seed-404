@@ -44,13 +44,17 @@ def main():
     p.add_argument("--weights", default=os.path.join(HERE, "weights.npz"))
     p.add_argument("--games", type=int, default=400)
     p.add_argument("--seed0", type=int, default=300000)
+    p.add_argument("--blends", type=float, nargs="*", default=None,
+                   help="BLEND values to try instead of the default set (plus learned-only)")
     a = p.parse_args()
     assert not (990000 <= a.seed0 < 1000000), "never tune on the judge seeds"
+    variants = VARIANTS if a.blends is None else (
+        [(f"blend_{b:g}", "blend", b) for b in a.blends] + [("learned", "learned", 1.0)])
 
     # one organisers' evaluate process per variant, all at once (the harness starts its own
     # processes, which a multiprocessing.Pool worker may not do)
     procs = []
-    for n, m, b in VARIANTS:
+    for n, m, b in variants:
         path = make_variant(a.work, n, m, b, a.weights)
         log = open(os.path.join(a.work, n + ".txt"), "w")
         procs.append((n, log, subprocess.Popen(
