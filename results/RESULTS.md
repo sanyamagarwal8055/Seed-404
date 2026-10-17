@@ -32,6 +32,12 @@ the bottleneck (section 0).
 | # | Uploaded (IST) | Version | vs F | vs O | Strength (0.5 F + 0.5 O) | Mean / worst CPU | Over clock | Faults |
 |---|---|---|---|---|---|---|---|---|
 | 1 | 13:47 | v01_catan_fixes | 0.541 ± 0.031 | 0.393 ± 0.030 | 0.467 | 189 / 685 ms | 0 | 0 |
+| 2 | 15:25 | v04_tuned | 0.580 ± 0.031 | 0.400 ± 0.030 | 0.490 | 205 / 641 ms | 0 | 0 |
+
+**v04 on the portal: +3.9 against F, but only +0.7 against O.** Tuning against F, road_army_f,
+card_hoarder and v01 improved play against F-like opponents and barely touched O. (Our judge said
+0.621 against F; the portal's 0.580 is on different boards, and the two intervals still overlap.)
+Whatever O does well, our sparring pool does not contain it yet.
 
 1,000 games against each anchor on the organisers' public board set, on their machine.
 
