@@ -1,4 +1,6 @@
-"""F, written against the agent interface. This is the bot you have to beat.
+"""parent: none; exact copy of examples/f_agent.py, baseline.
+
+F, written against the agent interface. This is the bot you have to beat.
 
 F scores a position with a weighted sum of 13 features and plays the move leading to the
 best-scoring position. It looks one move ahead and no further. The weights are catanatron's,
