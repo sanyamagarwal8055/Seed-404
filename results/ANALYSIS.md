@@ -1,10 +1,34 @@
 # Analysis for building the next version
 
 Read this before starting a version. `RESULTS.md` has the numbers; this says what they mean and what to
-try. Only Vivaan's sessions edit this file. Updated 17 Oct 2026, 14:30 IST.
+try. Only Vivaan's sessions edit this file. Updated 17 Oct 2026, 15:30 IST.
 
 Sources: `results/results.csv`, `results/uploads.csv`, per-game data in `report/analysis/data/`.
 Findings are associations, not proven causes, unless marked tested.
+
+## 0. New candidate (15:24): `tuning/v01_tuned_roadrace/agent.py`, ready to copy into agents/
+v01 with tuned weights plus a road-race term. Same fresh boards (700000+, never used for tuning):
+
+| | vs F (300 games) | vs road_army_f (180 games) |
+|---|---|---|
+| v01 | 0.570 | 0.472 |
+| v01_tuned_roadrace | **0.620** | **0.567** |
+
++5.0 vs F (+-7.9), +9.4 vs road_army_f (+-10.3) on those boards.
+
+**Judge (15:29, 1000 games vs F, seed0 990000 split 334/334/332 as Jainam does, local laptop):**
+v01_tuned_roadrace **0.623 +-0.030** (213+206+204 wins) against v01 0.553 (190+173+190, exactly
+Jainam's result, so local and team-machine numbers match). **+7.0 points, outside the margin.**
+0 errors, 0 games over the clock. **Next: copy to `agents/vNN_tuned_roadrace/` and upload** (the
+only way to learn its O score).
+
+What the tuning showed: v01's value is a strict ladder (VP 3e14 >> production 1e8 >> the rest), so
+scaling the road weight up x10 or x30 changed **no** move (identical games). On the fresh boards the
+tuned weights alone gave +3.3 vs F and +4.4 vs road_army_f; adding the relative road-race term,
++1e7 x (our longest road - theirs), gave +1.7 and +5.0 more. Each step alone is inside its margin;
+only the total is close to significant. The weight changes: denying the opponent's production x2,
+development cards held x3.4, a hand close to a build x1.5.
+Full log: `tuning/log.csv`.
 
 ## 1. Status
 - v01 on the portal: 0.541 vs F, **0.393 vs O**, strength 0.467. O is the bottleneck: a point against

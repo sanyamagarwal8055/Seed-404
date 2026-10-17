@@ -1,0 +1,32 @@
+{
+ "log10_mult": {
+  "production": 1.0043177097004674,
+  "enemy_production": 0.3,
+  "num_tiles": 0.0,
+  "reachable_production_0": 0.0,
+  "reachable_production_1": -0.8806342284607309,
+  "buildable_nodes": -0.060829329995384984,
+  "hand_synergy": 0.1875602047998169,
+  "hand_resources": -0.5595515736056235,
+  "hand_devs": 0.5282142094694006,
+  "PORT2": 0.0,
+  "PORT3": 0.43108256282884855,
+  "ROAD": -1.2145736129089773,
+  "ARMY": 0.0
+ },
+ "mult": {
+  "production": 10.099914788063401,
+  "enemy_production": 1.9952623149688795,
+  "num_tiles": 1.0,
+  "reachable_production_0": 1.0,
+  "reachable_production_1": 0.13163330075720064,
+  "buildable_nodes": 0.8693019823826058,
+  "hand_synergy": 1.540140015750246,
+  "hand_resources": 0.27570740231538304,
+  "hand_devs": 3.374537117782534,
+  "PORT2": 1.0,
+  "PORT3": 2.698252342880853,
+  "ROAD": 0.061013562989824244,
+  "ARMY": 1.0
+ }
+}

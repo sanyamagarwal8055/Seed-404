@@ -34,3 +34,5 @@ time,version,opponent,seed0,games,win_rate,ci95,mean_cpu_ms,worst_cpu_ms,games_o
 2026-10-17 15:14 IST,v04_tuned,road_army_f,100000,400,0.5325,0.0489,185.0,400.0,0,0,pool; 3 in parallel; v01 got 0.4875
 2026-10-17 15:14 IST,v04_tuned,card_hoarder,100000,400,0.7125,0.0444,200.7,480.0,0,0,pool; 3 in parallel; v01 got 0.7125
 2026-10-17 15:14 IST,v04_tuned,v01_catan_fixes,100000,400,0.5600,0.0486,183.2,500.0,0,0,head-to-head vs previous best; 3 in parallel; lower bound 0.511 > 0.5 -> better
+2026-10-17 15:29 IST,v01_tuned_roadrace,F,990000,1000,0.6230,0.0300,,,0,0,judge on Vivaan's laptop; 3 parts (334+334+332 on seed0 990000/990167/990334); 213+206+204 wins; v01 rerun alongside on same games gave 190+173+190 = 0.553 (identical to team machine); CPU not comparable (6 runs in parallel)
+2026-10-17 15:22 IST,v01_tuned_roadrace,road_army_f,700000,180,0.5670,0.0724,,,0,0,fresh-board check via tuning/validate.py on Vivaan's laptop; v01 got 0.472 on the same games
