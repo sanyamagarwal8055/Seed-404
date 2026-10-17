@@ -1,13 +1,25 @@
 # Seed 404: evaluation results
 
 Runner's summary of every evaluation so far. The raw numbers, one row per run, are in
-[`results.csv`](results.csv); this file explains them. Last updated 17 Oct 2026, 14:15 IST, after
-`v03_search`.
+[`results.csv`](results.csv); this file explains them. Last updated 17 Oct 2026, 15:20 IST, after
+`v04_tuned` and `v05_expect_relative`.
 
-**Bottom line:** `v01_catan_fixes` beats F by a measurable margin (55.3% against the baseline's 48.9%
-on the 1,000-game judge). `v02_openings` (better opening) and `v03_search` (exact expectations plus
-same-turn lookahead) both play the same as `v01` within the margin, on every test; v03 costs 55% more
-CPU for it. Current best: `v01` (simplest, same strength).
+**Bottom line:** **`v04_tuned` is the current best**: 0.621 ± 0.030 against F on the judge (v01
+0.553), it beats v01 head to head (0.560) and is above 50% against road_army_f for the first time.
+Its gain comes from tuning every weight on win rate. Everything that changed search or added
+hand-made features instead (v02, v03, v05, x1, x2) stayed at or below v01; v05 is measurably worse.
+Our learned value function (vj01, vj02) predicts winners well but plays badly (section 9).
+
+| Version | Judge vs F | Verdict |
+|---|---|---|
+| v00_f_copy | 0.489 | baseline |
+| v01_catan_fixes | 0.553 | better than v00 |
+| v02_openings | 0.554 | = v01 |
+| v03_search | 0.556 | = v01, 55% more CPU |
+| **v04_tuned** | **0.621** | **better than v01: current best** |
+| v05_expect_relative | 0.439 | **worse than v01** |
+| x1_v03_budget (vj) | 0.567 | = v01 |
+| x2_v01_road (vj) | 0.562 | = v01 |
 
 **Official score (portal, submission #1, v01):** 0.541 ± 0.031 against F and **0.393 ± 0.030 against
 O**, strength 0.467. Our local numbers against F are confirmed; O is much stronger than F and is now
@@ -69,11 +81,19 @@ the bottleneck (section 0).
 | **v01_catan_fixes** | **0.553 ± 0.031** | 0.560 ± 0.049 | 183 / 470 ms |
 | v02_openings | 0.554 ± 0.031 | 0.558 ± 0.049 | 175 / 470 ms |
 | v03_search | 0.556 ± 0.031 | 0.578 ± 0.048 | 282 / 570 ms |
+| **v04_tuned** | **0.621 ± 0.030** | 0.598 ± 0.048 | 179 / 420 ms |
+| v05_expect_relative | 0.439 ± 0.031 | 0.440 ± 0.049 | 184 / 540 ms |
+| x1_v03_budget (vj) | 0.567 ± 0.031 | 0.570 ± 0.049 | 305 / 620 ms |
+| x2_v01_road (vj) | 0.562 ± 0.031 | 0.573 ± 0.049 | 194 / 500 ms |
 
 - **v01 vs v00: +6.4 points on the judge, larger than the ci95. A real improvement.** The baseline
   sits at about 50%, as an exact copy of F should.
 - **v02 vs v01: +0.1 points. No measurable difference.**
 - **v03 vs v01: +0.3 points. No measurable difference**, at about 100 ms more CPU per game.
+- **v04 vs v01: +6.8 points. Measurably better.** Same one-move lookahead and CPU as v01; only the
+  weights differ (tuned by evolution strategy against F, road_army_f, card_hoarder and v01).
+- **v05 vs v01: −11.4 points. Measurably worse.**
+- **x1 vs v01: +1.4, x2 vs v01: +0.9. No measurable difference.**
 
 ## 4. Against the opponent pool (robustness)
 
@@ -86,6 +106,8 @@ number in each row matters most.
 | v01_catan_fixes | 0.488 | 0.713 | 0.795 | 0.638 | 1.000 |
 | v02_openings | 0.508 | 0.685 | 0.808 | 0.610 | 1.000 |
 | v03_search | 0.480 | 0.693 | 0.793 | — | 1.000 |
+| **v04_tuned** | **0.533** | 0.713 | — | — | — |
+| v05_expect_relative | 0.340 | 0.680 | — | — | — |
 
 ci95 is about ±0.04 to ±0.05 for every cell.
 
@@ -107,6 +129,11 @@ ci95 is about ±0.04 to ±0.05 for every cell.
 |---|---|---|
 | v02_openings vs v01_catan_fixes | 0.475 ± 0.049 | no measurable difference |
 | v03_search vs v01_catan_fixes | 0.495 ± 0.049 | no measurable difference |
+| **v04_tuned vs v01_catan_fixes** | **0.560 ± 0.049** | **better** (lower bound 0.511) |
+| v05_expect_relative vs v01_catan_fixes | 0.380 ± 0.048 | worse |
+
+**Opponent strength against F** (each opponent as the measured agent, 400 games, seed0 100000):
+road_army_f 0.560 ± 0.049 (just above F), card_hoarder 0.348 ± 0.047, greedy_builder 0.230 ± 0.041.
 
 A head-to-head of v01 against v00 was not run: v00 is byte-identical to F, so it would replay the F
 judge exactly.
@@ -125,15 +152,65 @@ per decision than F uses.
 2. **The v02 opening, as built, adds nothing measurable.** Either F's own one-move opening is already
    about as good as this hand-made score, or the opening gain is smaller than ±3 points. A 1,000-game
    head-to-head against v01 on fresh seeds would tell which, if the team wants to keep it.
-3. **More search at this budget did not help (v03).** Exact expectations over dice, robber and
+3. **Tuning the weights on win rate is what works (v04, +6.8).** It is the only change since v01
+   that moved the judge outside the margin, at no CPU cost. Search (v03, x1), hand-made features
+   (v02, v05, x2) and a learned predictor (vj01, vj02) did not.
+4. **More search at this budget did not help (v03).** Exact expectations over dice, robber and
    development cards plus a greedy same-turn lookahead changed nothing measurable, against F, against
    the pool or head to head. Since v03 still uses under 30% of the allowance (about 280 ms of about
    1,000 ms), the open question is whether more budget would help, or whether the one-move value
    function is the limit. A run of v03 with a larger per-decision budget would separate the two.
-4. **For robustness, the weak spot is a Longest Road racer.** A version that contests the road (or
+5. **For robustness, the weak spot was a Longest Road racer** (v04 is the first version above 50%
+   against it, 0.533). A version that contests the road (or
    blocks it) should be tested against road_army_f first.
 
-## 8. Suggested next steps
+## 8. Side experiments in `vj/` (Jainam)
+
+None of these is a team version. Laptop runs give valid win rates (identical games on both machines)
+but not valid CPU numbers.
+
+**x1_v03_budget: is search budget the limit?** v03 with 3× the budget (60 ms per decision, 50% of
+`cpu_left`): 0.567 on the judge, +1.4 over v01, inside the margin, at 305 ms per game. **No: more
+search on the same scoring barely helps.**
+
+**x2_v01_road: is road_army_f's road weight the secret?** v01 with road_army_f's road bonus (3e7 per
+segment, uncapped, 10× v01's): 0.562, +0.9, inside the margin. **No.**
+
+**Teacher check: is a slow catanatron searcher worth imitating?** AlphaBeta depth 2 against F with
+**no clock**, perfect information: 21/42 = 0.50 ± 0.15. SameTurnAlphaBeta depth 2: 0.31 ± 0.14. **No:
+deeper search on F's value function is not stronger than F,** so distilling it would not help.
+
+**vj01 / vj02: a learned value function.** Logistic regression on 1.16 million positions from 10,000
+self-play games (v01 vs F, v01 vs v01, F vs F, 10% random moves, seeds 200000+), about 108
+board-independent features (production, reachability, VPs, road/army, hands, ports). catanatron's
+614-number `create_sample_vector` was rejected: most of it is per-node and per-edge ownership tied to
+one board, and it contains no production feature.
+
+| Variant (vs F, 400 games, seed0 300000, laptop) | vj01 | vj02 |
+|---|---|---|
+| BLEND 0 (= v01's choices) | 0.530 | 0.530 |
+| small blend (1e-6 to 0.25) | 0.060 | 0.488 to 0.510 |
+| learned value only | 0.065 | 0.223 |
+| validation: predicts the winner | 77.3% | 76.4% |
+
+**It predicts well and plays badly, and the reason is clear.** The fit spreads credit across features
+that move together. vj01 weighted `SETTLEMENTS_LEFT` +0.27 (its largest weight) and resources in hand
++0.15: building lowers both, so the agent stopped building. vj02 removed those bookkeeping features
+and recovered to about v01's level when blended, but then weighted public VPs −1.45 and actual VPs
++1.24, so a normal victory point still scores −0.21. **A model fitted to predict outcomes is not a
+model of which move is better.** Fixing it needs a decision-level target (imitation, or tuning on
+win rate), which is what v04 does.
+
+**vj04: evolution strategy over v01's weights against F (laptop, in progress).** Same idea as v04
+but fitness against F only. Estimate after 4 generations: 0.603 ± 0.055 (perfect-information games).
+It moves weights the same way v04's tuner did (production up about 10×, opponent production down
+about 10×).
+
+## 9. Suggested next steps
+
+*Update 15:20:* upload v04_tuned (zip `agent.py` **and** `weights.json`: without the json it falls
+back to v01's weights silently). The most promising next step is more tuning from v04's weights.
+The older suggestions below date from 13:35.
 
 - **Sanyam:** keep v01 as the candidate for upload; treat the v02 opening as optional. Next ideas
   with room in the budget: average over 3 to 5 sampled worlds; respond to an opponent's road race.
