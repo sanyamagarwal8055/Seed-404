@@ -1,12 +1,13 @@
 # Seed 404: evaluation results
 
 Runner's summary of every evaluation so far. The raw numbers, one row per run, are in
-[`results.csv`](results.csv); this file explains them. Last updated 17 Oct 2026, 13:35 IST, after
-`v02_openings`.
+[`results.csv`](results.csv); this file explains them. Last updated 17 Oct 2026, 14:15 IST, after
+`v03_search`.
 
 **Bottom line:** `v01_catan_fixes` beats F by a measurable margin (55.3% against the baseline's 48.9%
-on the 1,000-game judge). `v02_openings` adds better opening placement but plays the same as `v01`
-within the margin, on every test. Current best: `v01` (simpler, same strength).
+on the 1,000-game judge). `v02_openings` (better opening) and `v03_search` (exact expectations plus
+same-turn lookahead) both play the same as `v01` within the margin, on every test; v03 costs 55% more
+CPU for it. Current best: `v01` (simplest, same strength).
 
 **Official score (portal, submission #1, v01):** 0.541 ± 0.031 against F and **0.393 ± 0.030 against
 O**, strength 0.467. Our local numbers against F are confirmed; O is much stronger than F and is now
@@ -66,10 +67,12 @@ the bottleneck (section 0).
 | v00_f_copy | 0.489 ± 0.031 | 0.518 ± 0.049 | 182 / 480 ms |
 | **v01_catan_fixes** | **0.553 ± 0.031** | 0.560 ± 0.049 | 183 / 470 ms |
 | v02_openings | 0.554 ± 0.031 | 0.558 ± 0.049 | 175 / 470 ms |
+| v03_search | 0.556 ± 0.031 | 0.578 ± 0.048 | 282 / 570 ms |
 
 - **v01 vs v00: +6.4 points on the judge, larger than the ci95. A real improvement.** The baseline
   sits at about 50%, as an exact copy of F should.
 - **v02 vs v01: +0.1 points. No measurable difference.**
+- **v03 vs v01: +0.3 points. No measurable difference**, at about 100 ms more CPU per game.
 
 ## 4. Against the opponent pool (robustness)
 
@@ -81,6 +84,7 @@ number in each row matters most.
 | v00_f_copy | 0.440 | 0.650 | 0.760 | 0.583 | — |
 | v01_catan_fixes | 0.488 | 0.713 | 0.795 | 0.638 | 1.000 |
 | v02_openings | 0.508 | 0.685 | 0.808 | 0.610 | 1.000 |
+| v03_search | 0.480 | 0.693 | 0.793 | — | 1.000 |
 
 ci95 is about ±0.04 to ±0.05 for every cell.
 
@@ -101,6 +105,7 @@ ci95 is about ±0.04 to ±0.05 for every cell.
 | Match | Win rate (400 games, seed 100000) | Verdict |
 |---|---|---|
 | v02_openings vs v01_catan_fixes | 0.475 ± 0.049 | no measurable difference |
+| v03_search vs v01_catan_fixes | 0.495 ± 0.049 | no measurable difference |
 
 A head-to-head of v01 against v00 was not run: v00 is byte-identical to F, so it would replay the F
 judge exactly.
@@ -119,8 +124,11 @@ per decision than F uses.
 2. **The v02 opening, as built, adds nothing measurable.** Either F's own one-move opening is already
    about as good as this hand-made score, or the opening gain is smaller than ±3 points. A 1,000-game
    head-to-head against v01 on fresh seeds would tell which, if the team wants to keep it.
-3. **CPU is not a constraint yet.** Every version uses under 20% of the allowance, so the next gains
-   can come from spending more compute: several sampled worlds per decision, or a short lookahead.
+3. **More search at this budget did not help (v03).** Exact expectations over dice, robber and
+   development cards plus a greedy same-turn lookahead changed nothing measurable, against F, against
+   the pool or head to head. Since v03 still uses under 30% of the allowance (about 280 ms of about
+   1,000 ms), the open question is whether more budget would help, or whether the one-move value
+   function is the limit. A run of v03 with a larger per-decision budget would separate the two.
 4. **For robustness, the weak spot is a Longest Road racer.** A version that contests the road (or
    blocks it) should be tested against road_army_f first.
 
