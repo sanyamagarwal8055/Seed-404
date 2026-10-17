@@ -1,10 +1,13 @@
-"""Opponent: greedy builder. Always takes the most expensive build it can afford.
+"""Opponent: greedy builder. Spends on roads, settlements and cities the moment it can, and never buys
+a development card.
 
-Priority: city, then settlement, then road, then development card, then everything else; ending the
-turn comes last and bank trades never. Among moves of the same kind (for example which spot to put a
-settlement on) it picks by F's value function, so it places well but never saves resources.
+Priority: city, then settlement, then road; everything else after that. Ending the turn comes next to
+last, and bank trades and development-card purchases never. Among moves of the same kind (for example
+which spot to put a settlement on) it picks by F's value function.
 
-A fixed sparring partner, not a submission. Style: fast expansion, no card play planning.
+Measured over 30 games against F (report/analysis/style_check.py): 0 development cards and 0 knights
+against F's 1.2 and 0.7; 2.2 cities (F 2.2), 3.7 settlements (F 4.6), 7.4 roads (F 9.3); it wins
+20% of games against F. A fixed sparring partner, not a submission. Style: builds only, no cards.
 """
 import random
 
@@ -17,7 +20,7 @@ RANK = {
     AT.BUILD_CITY: 0,
     AT.BUILD_SETTLEMENT: 1,
     AT.BUILD_ROAD: 2,
-    AT.BUY_DEVELOPMENT_CARD: 3,
+    AT.BUY_DEVELOPMENT_CARD: 10,     # never: below even ending the turn
     AT.PLAY_KNIGHT_CARD: 4,
     AT.PLAY_YEAR_OF_PLENTY: 4,
     AT.PLAY_MONOPOLY: 4,

@@ -6,7 +6,10 @@ and its knight term is 10.1. (Passing other weights to get_value_fn("base_fn", .
 it always uses the defaults, so the bonus is added here instead.)
 
 The two bonus sizes are a guess on F's scale (one victory point is 3e14, one production point 1e8).
-A fixed sparring partner, not a submission. Style: contests the two bonus cards F neglects.
+Measured over 30 games against F (report/analysis/style_check.py): the road bonus works (longest road
+7.9 against F's 5.7), the army bonus does not (0.6 knights played against F's 0.7), because it only
+rewards playing a knight and not buying the card. A fixed sparring partner, not a submission.
+Style in practice: road racer.
 """
 import random
 
