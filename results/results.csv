@@ -44,3 +44,10 @@ time,version,opponent,seed0,games,win_rate,ci95,mean_cpu_ms,worst_cpu_ms,games_o
 2026-10-17 15:49 IST,v01_tuned_roadrace,road_army_f,100000,400,0.5850,0.0483,223.6,750.0,0,0,pool; 3 in parallel + tuner; v04 got 0.5325
 2026-10-17 15:49 IST,v01_tuned_roadrace,card_hoarder,100000,400,0.7275,0.0436,238.8,740.0,0,0,pool; 3 in parallel + tuner; v04 got 0.7125
 2026-10-17 15:49 IST,v01_tuned_roadrace,v04_tuned,100000,400,0.5375,0.0489,223.8,590.0,0,0,head-to-head vs v04; inside ci -> no measurable difference
+2026-10-17 16:02 IST,vj06_vpcards_k1,F,100000,400,0.5975,0.0481,220.4,550.0,0,0,#3 + hidden VP cards counted + exact dev-card expectation; quick; 3 in parallel + tuner; #3 got 0.6350
+2026-10-17 16:02 IST,vj06_vpcards_k0.5,F,100000,400,0.6100,0.0478,226.1,540.0,0,0,same; K=0.25 played identical games (0.6100)
+2026-10-17 16:06 IST,vj06_vpcards_k0.5,F,990000,1000,0.6230,0.0300,223.0,630.0,0,0,judge; 209+208+206 wins; #3 0.6230 -> level
+2026-10-17 16:06 IST,vj06_vpcards_k0.5,v01_tuned_roadrace,100000,400,0.5000,0.0490,229.3,520.0,0,0,head-to-head vs #3; even
+2026-10-17 16:13 IST,vj07_ensemble,F,100000,400,0.6025,0.0480,286.4,870.0,0,0,vote of #3 + v04 + v04c weights (with vj06 fix); quick; 5 in parallel; #3 got 0.6350
+2026-10-17 16:13 IST,vj07_ensemble,F,990000,1000,0.6500,0.0296,273.3,730.0,0,0,judge; 224+210+216 wins; #3 0.6230 -> +2.7 (edge of ci); highest judge so far
+2026-10-17 16:13 IST,vj07_ensemble,v01_tuned_roadrace,100000,400,0.5075,0.0490,285.7,680.0,0,0,head-to-head vs #3; even
