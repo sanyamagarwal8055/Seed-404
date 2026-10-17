@@ -8,6 +8,32 @@ Runner's summary of every evaluation so far. The raw numbers, one row per run, a
 on the 1,000-game judge). `v02_openings` adds better opening placement but plays the same as `v01`
 within the margin, on every test. Current best: `v01` (simpler, same strength).
 
+**Official score (portal, submission #1, v01):** 0.541 ± 0.031 against F and **0.393 ± 0.030 against
+O**, strength 0.467. Our local numbers against F are confirmed; O is much stronger than F and is now
+the bottleneck (section 0).
+
+---
+
+## 0. Official scores from the portal
+
+| # | Uploaded (IST) | Version | vs F | vs O | Strength (0.5 F + 0.5 O) | Mean / worst CPU | Over clock | Faults |
+|---|---|---|---|---|---|---|---|---|
+| 1 | 13:47 | v01_catan_fixes | 0.541 ± 0.031 | 0.393 ± 0.030 | 0.467 | 189 / 685 ms | 0 | 0 |
+
+1,000 games against each anchor on the organisers' public board set, on their machine.
+
+- **Local testing matches the official score.** Our judge said 0.553 ± 0.031 against F; the portal
+  says 0.541 ± 0.031. The intervals overlap almost completely, so the local judge can be trusted to
+  rank versions against F. CPU also matches (182 ms locally, 189 ms on their machine).
+- **O is the weak spot.** We win 39% against O, against 54% against F. Since strength is the average
+  of the two, every point gained against O counts as much as a point against F, and there is far more
+  room to gain there.
+- **We cannot test against O locally.** Each upload is our only reading of O, so uploads should go to
+  versions that have already beaten the current best on the local judge. 6 scored submissions and 9
+  uploads are left.
+- The leaderboard uses the public set; the top-30 cut uses a private set. Expect the private numbers
+  to differ a little.
+
 ---
 
 ## 1. How we measure
