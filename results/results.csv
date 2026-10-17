@@ -39,3 +39,8 @@ time,version,opponent,seed0,games,win_rate,ci95,mean_cpu_ms,worst_cpu_ms,games_o
 2026-10-17 15:40 IST,catanatron_AlphaBeta_d2_v04value,v04_tuned,410000,84,0.4290,0.1060,,,0,0,LAPTOP; perfect info; NO clock; teacher check for distillation -> not stronger than v04
 2026-10-17 15:40 IST,catanatron_AlphaBeta_d2_v04value,F,410000,84,0.5830,0.1050,,,0,0,LAPTOP; same setup
 2026-10-17 15:40 IST,v04_tuned_greedy_perfect_info,F,410000,84,0.5240,0.1070,,,0,0,LAPTOP; reference for the teacher check (catanatron directly; not the harness)
+2026-10-17 15:43 IST,v01_tuned_roadrace,F,100000,400,0.6350,0.0472,193.5,490.0,0,0,Vivaan's tuned candidate (tuning/); quick on team machine; 1 core + tuner on 4; v04 got 0.5975
+2026-10-17 15:46 IST,v01_tuned_roadrace,F,990000,1000,0.6230,0.0300,207.2,560.0,0,0,judge on team machine; 3 cores + tuner on 4 (CPU slightly high); 206+213+204 wins = Vivaan's laptop result exactly; v04 0.6210
+2026-10-17 15:49 IST,v01_tuned_roadrace,road_army_f,100000,400,0.5850,0.0483,223.6,750.0,0,0,pool; 3 in parallel + tuner; v04 got 0.5325
+2026-10-17 15:49 IST,v01_tuned_roadrace,card_hoarder,100000,400,0.7275,0.0436,238.8,740.0,0,0,pool; 3 in parallel + tuner; v04 got 0.7125
+2026-10-17 15:49 IST,v01_tuned_roadrace,v04_tuned,100000,400,0.5375,0.0489,223.8,590.0,0,0,head-to-head vs v04; inside ci -> no measurable difference
