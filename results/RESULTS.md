@@ -59,6 +59,7 @@ the bottleneck (section 0).
 | `v00_f_copy` | none | Exact copy of F (`examples/f_agent.py`). Baseline. |
 | `v01_catan_fixes` | v00 | F plus four value-function fixes: 2:1 and 3:1 port bonus, always-on Longest Road progress, Largest Army progress (knights played), and weight 1e4 on `reachable_production_0`. |
 | `v02_openings` | v01 | v01 plus a hand-made opening: picks settlement pairs under the 2-player snake order, adds a complement bonus for the second settlement, and points the first roads at the best free spot. The rest of the game is unchanged. |
+| `v03_search` | v01 | v01's value function plus search: random-outcome moves (roll, robber, buying a development card) scored as their exact expected value instead of one sample, and the top-k moves extended with our own same-turn follow-ups (trade then build, and so on). Budget 20 ms per decision (40 ms early), at most 30% of `cpu_left`, measured with `process_time`. |
 
 ## 3. Against F (the anchor that counts for strength)
 
