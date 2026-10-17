@@ -20,3 +20,10 @@ time,version,opponent,seed0,games,win_rate,ci95,mean_cpu_ms,worst_cpu_ms,games_o
 2026-10-17 13:34 IST,v00_f_copy,greedy_builder,100000,400,0.7600,0.0419,201.4,550.0,0,0,new greedy_builder (7117fc4: never buys dev cards); 3 in parallel
 2026-10-17 13:34 IST,v01_catan_fixes,greedy_builder,100000,400,0.7950,0.0396,201.0,680.0,0,0,new greedy_builder (7117fc4: never buys dev cards); 3 in parallel
 2026-10-17 13:34 IST,v02_openings,greedy_builder,100000,400,0.8075,0.0386,198.6,590.0,0,0,new greedy_builder (7117fc4: never buys dev cards); 3 in parallel
+2026-10-17 14:03 IST,v03_search,F,100000,400,0.5775,0.0484,267.9,570.0,0,0,quick check; v01 got 0.5600 on same seeds; machine idle
+2026-10-17 14:06 IST,v03_search,F,990000,1000,0.5560,0.0308,282.2,570.0,0,0,judge; 3 cores; 193+182+181 wins; v01 got 0.5530 -> no measurable difference
+2026-10-17 14:10 IST,v03_search,card_hoarder,100000,400,0.6925,0.0452,306.4,540.0,0,0,opponent pool via run_pool.py; 3 in parallel; v01 got 0.7125
+2026-10-17 14:10 IST,v03_search,greedy_builder,100000,400,0.7925,0.0397,306.1,630.0,0,0,opponent pool via run_pool.py; 3 in parallel; new greedy; v01 got 0.7950
+2026-10-17 14:10 IST,v03_search,road_army_f,100000,400,0.4800,0.0490,279.6,590.0,0,0,opponent pool via run_pool.py; 3 in parallel; v01 got 0.4875
+2026-10-17 14:12 IST,v03_search,random,100000,400,1.0000,0.0000,305.1,590.0,0,0,random floor via run_pool.py; 2 in parallel
+2026-10-17 14:13 IST,v03_search,v01_catan_fixes,100000,400,0.4950,0.0490,271.0,520.0,0,0,head-to-head vs current best; 2 in parallel; inside ci -> no measurable difference
