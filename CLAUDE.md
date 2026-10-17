@@ -129,6 +129,15 @@ probabilities (a 6 tile ≈ 0.139 per roll), so production terms are about 1e7 t
 | v00_f_copy | exact copy of F | baseline |
 | v01_catan_fixes | F + port bonus (2:1 → 3e7×prod_r, 3:1 → 1e7×total prod), road progress 3e6×min(len,8), army progress 3e6×min(knights,4), reachable_production_0 = 1e4 | **current best**; uploaded |
 | v02_openings | v01 + pair-aware snake-order setup settlements and roads | neutral: no measurable gain over v01 |
+| v03_search | v01 + exact expectation for random moves + greedy same-turn follow-ups (top-4) | neutral: judge 55.6%, h2h vs v01 49.5%; 0 over budget, ~280 ms/game |
+| v04_tuned | v01 with all weights tuned against the pool (tools/tune.py) + road_race and opp_vps features | **best so far locally**: h2h vs v01 61.0% ± 5.5, better than v01 vs every pool opponent; waiting for Jainam's kit runs |
+| v05_expect_relative | (other session) v01 + exact chance expectation via execute_spectrum + pruning + relative road/army races | pushed (faaf711), untested |
+
+v04_tuned local validation (Sanyam's laptop, catanatron 3.3.0 from GitHub, `sample_world` = exact
+copy, 300 games per opponent, seeds 400000+, never used in tuning; ci95 ≈ ±5.5):
+F 60.3% (v01 58.0%), road_army_f 53.0% (49.0%), card_hoarder 73.0% (68.3%), greedy_builder 86.3%
+(83.0%), v01 61.0%. Local reads about 3 points above the kit for v01 vs F (58.0% vs judge 55.3%).
+Biggest tuned change: enemy_production −1e8 → −2.6e9 (deny the opponent's income).
 
 Measured results (from `results/results.csv`; judge = 1000 games seed0 990000, ci95 ≈ ±3.1;
 pool and head-to-head = 400 games seed0 100000, ci95 ≈ ±4 to 5):
@@ -161,25 +170,38 @@ worst matchups. Generalisation rules for every version:
 - Keep it simple and explainable: one idea per version, every result goes in the report.
 
 ### Roadmap (adjust to Jainam's results; ask Sanyam before changing order)
-1. **v03_search**: on top of v01. Use the spare CPU for budget-aware search: for the top-k actions
-   by v01's value, follow our own deterministic same-turn follow-ups (trade → build, road building →
-   settlement) until END_TURN, then score the final position. Random-outcome actions (roll, buy dev
-   card, robber steal) are scored as the average over a few samples. Budget per decision from
-   `obs.cpu_left` (never more than ~30% of what's left, extra only in the opening), deadline with
-   `time.process_time()`, always return the best found so far. Target mean CPU ~500-600 ms per game.
-2. **v04_road_defense**: counter road racers. Value the Longest Road race RELATIVELY (our length
-   minus opponent's, once the opponent has >= 4), reward settlements/roads that cut the opponent's
-   road extension, push the robber onto the opponent's wood/brick hexes while they are racing, and
-   value Largest Army as the alternative 2 VP when we can't win the road race.
-3. **v05_tuned_pool**: write `tools/tune.py` for Jainam: evolution strategy over v01's weights and
-   extra weights, fitness = mean win rate over the opponent pool (log-scale steps, public_vps fixed,
-   200+ games per candidate, seeds 200000+, one thread per process, log every candidate to CSV).
+Changed 14:10 IST: weight tuning moved up into v04 (Sanyam: v04 must make a big jump possible);
+the old v04_road_defense is folded into v04 as a tunable `road_race` feature.
+1. **v03_search** (measured: neutral, no gain over v01): v01 + exact expected value of random moves
+   (roll over 11 dice sums, robber steal over the victim's hand, dev card over the deck) + greedy
+   same-turn follow-ups for the top-4 moves. Lesson: more search on the same value function does
+   not help; the value function (weights) is the lever.
+2. **v04_tuned** (this is the "big change"): v01's 1-move agent with EVERY weight tunable
+   (F's 12 + v01's 4) plus two relative features, `road_race` (our longest road minus theirs once
+   theirs >= 4) and `opp_vps` (penalty per opponent public VP). Weights live in
+   `agents/v04_tuned/weights.json`, found by `tools/tune.py`: (1+λ) evolution strategy, 1 to 3
+   weights multiplied by exp(N(0, 0.7)) per mutant, all candidates on the same fresh seeds, a winner
+   must also win a second confirmation block, fitness = mean win rate over F + road_army_f +
+   card_hoarder + v01, seeds 200000+. Tuned on Sanyam's laptop (catanatron 3.3.0 from GitHub).
+   Write-up: `v04_tuned.pdf` at the repo root (source `v04_tuned.tex`).
+3. **Next (v06)**: keep tuning. Continue from `agents/v04_tuned/weights.json` on the team machine
+   (`--start agents/v04_tuned/weights.json --seed0 300000`), and/or put v04's weights into
+   v05_expect_relative if v05 measures better than v01. Upload v04 if the kit confirms the local
+   numbers (judge vs F >= v01's 55.3%, h2h vs v01 > 50% outside the ci).
 4. **v06_adaptive**: the same Agent object plays many games in a row against one opponent (allowed
-   by the rules). Detect the opponent's style from what we see (road length growth, dev cards
-   bought, knights played) and shift weights (e.g. more road defense vs a road racer). Must stay
-   safe if detection is wrong.
+   by the rules). Detect the opponent's style (road length growth, dev cards bought, knights played)
+   and shift weights (e.g. more `road_race` vs a road racer). Must stay safe if detection is wrong.
 5. **v07_final**: combine only what measurably helped, plus endgame rules (win immediately if any
    action reaches 10 VP; treat the opponent's unplayed dev cards as possible hidden VP).
+
+### Tuning (`tools/tune.py`, needs only catanatron, runs from the repo root)
+```
+python tools/tune.py --agent agents/v04_tuned/agent.py --minutes 40 --workers 7 \
+    --start agents/v04_tuned/weights.json --seed0 300000
+```
+Logs every candidate to `tools/tune_log.csv`, writes the incumbent to `tools/tune_best.json`.
+Use a seed0 not used before (the v04 run used 200000 to 200800; validation used 400000+). Never 100000 or 990000.
+The agent must accept `Agent(weights=dict)`.
 
 Catan facts to use: pips = ways to roll (6/8 = 5, 5/9 = 4, 4/10 = 3, 3/11 = 2, 2/12 = 1);
 cities double production and cannot be blocked; Longest Road / Largest Army are 4-point swings in
