@@ -10,6 +10,7 @@ single core, and prints a table. At the end it prints one CSV line per opponent 
 results/results.csv, ready to paste there. This script never writes results.csv itself: Jainam owns it.
 
 Use --only NAME to run one opponent (for example to split the pool over several cores by hand).
+A default run skips opponents our versions beat easily (see SKIP_BY_DEFAULT); --all runs everything.
 The default seeds (100000 and up) are the quick-check range. Do not tune on 990000.
 """
 import os
@@ -21,6 +22,9 @@ from catan_kit._patch import ensure_hash_seed  # noqa: E402
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 NOT_OPPONENTS = {"run_pool.py"}
+#: Left out of a default run, to save machine time. Our versions beat these 70 to 100% of the time, so
+#: they cannot tell two versions apart. Still available by name (--only NAME) or with --all.
+SKIP_BY_DEFAULT = {"greedy_builder", "card_hoarder", "random"}
 
 
 def opponents(kit_root):
@@ -48,6 +52,7 @@ def main():
     p.add_argument("--games", type=int, default=200, help="games per opponent")
     p.add_argument("--seed0", type=int, default=100000)
     p.add_argument("--only", help="run just this opponent (F, random, or a file name without .py)")
+    p.add_argument("--all", action="store_true", help="include the opponents skipped by default")
     p.add_argument("--notes", default="")
     args = p.parse_args()
 
@@ -58,6 +63,8 @@ def main():
         pool = [o for o in pool if o[0] == args.only]
         if not pool:
             sys.exit(f"no opponent called {args.only!r}")
+    elif not args.all:
+        pool = [o for o in pool if o[0] not in SKIP_BY_DEFAULT]
 
     rows = []
     print(f"{version}: {args.games} games per opponent, seed0 {args.seed0}\n")
