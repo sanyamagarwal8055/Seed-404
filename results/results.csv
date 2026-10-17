@@ -9,3 +9,4 @@ time,version,opponent,seed0,games,win_rate,ci95,mean_cpu_ms,worst_cpu_ms,games_o
 2026-10-17 13:13 IST,v00_f_copy,card_hoarder,100000,400,0.6500,0.0467,210.3,530.0,0,0,opponent pool via run_pool.py; reference for v01; 3 in parallel
 2026-10-17 13:12 IST,v00_f_copy,greedy_builder,100000,400,0.5825,0.0483,200.6,490.0,0,0,opponent pool via run_pool.py; reference for v01; 3 in parallel
 2026-10-17 13:12 IST,v00_f_copy,road_army_f,100000,400,0.4400,0.0486,193.4,420.0,0,0,opponent pool via run_pool.py; reference for v01; 3 in parallel
+2026-10-17 13:18 IST,v01_catan_fixes,random,100000,400,1.0000,0.0000,184.9,430.0,0,0,random floor via run_pool.py; machine idle
